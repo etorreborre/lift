@@ -14,40 +14,35 @@
  * limitations under the License.
  */
 
-package net.liftweb {
-package common {
+package net.liftweb
+package common
 
-import _root_.org.specs._
+import org.specs2.ScalaCheck
+import org.specs2.mutable._
 import _root_.net.liftweb.common.Box._
-import _root_.org.specs.runner._
-import _root_.org.specs.Sugar._
-import _root_.org.specs.ScalaCheck
 import _root_.org.scalacheck.Gen._
 import _root_.org.scalacheck._
 import _root_.org.scalacheck.Arbitrary._
 import _root_.org.scalacheck.Prop.{forAll}
 
 
-class BoxUnitTest extends Runner(BoxUnit) with JUnit
-object BoxUnit extends Specification with BoxGen with ScalaCheck {
+class BoxUnitTest extends SpecificationWithJUnit with BoxGen with ScalaCheck {
   "A Box equals method" should {
-    "return true with comparing two identical Box messages" in {
-      val equality = (c1: Box[Int], c2: Box[Int]) => (c1, c2) match {
-        case (Empty, Empty) => c1 == c2
-        case (Full(x), Full(y)) => (c1 == c2) == (x == y)
-        case (Failure(m1, e1, l1), Failure(m2, e2, l2)) => (c1 == c2) == ((m1, e1, l1) == (m2, e2, l2))
-        case _ => c1 != c2
+    "return true with comparing two identical Box messages" in check { (c1: Box[Int], c2: Box[Int]) => (c1, c2) match {
+        case (Empty, Empty) => c1 must_== c2
+        case (Full(x), Full(y)) => (c1 == c2) must_== (x == y)
+        case (Failure(m1, e1, l1), Failure(m2, e2, l2)) => (c1 == c2) must_== ((m1, e1, l1) == (m2, e2, l2))
+        case _ => c1 must_!= c2
       }
-      forAll(equality) must pass
     }
     "return false with comparing one Full and another object" in {
-      Full(1) must_!= "hello"
+      Full(1) must be_!=("hello")
     }
     "return false with comparing one Empty and another object" in {
-      Empty must_!= "hello"
+      Empty must be_!=("hello")
     }
     "return false with comparing one Failure and another object" in {
-      Failure("", Empty, Empty) must_!= "hello"
+      Failure("", Empty, Empty) must be_!=("hello")
     }
   }
 }
@@ -74,7 +69,4 @@ trait BoxGen {
     chain <- frequency((1, listOfN(chainLen, genFailureBox)), (3, value(Nil)))
   } yield Failure(msg.mkString, exception, Box(chain.headOption))
 
-}
-
-}
 }
