@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.liftweb {
-package common {
+package net.liftweb
+package common
 
-import _root_.org.specs._
+import org.specs2.mutable._
 import _root_.net.liftweb.common.Box._
 import _root_.org.specs.runner._
 import _root_.org.specs.Sugar._
@@ -28,36 +28,35 @@ import _root_.org.scalacheck.Arbitrary._
 import _root_.org.scalacheck.Prop.{forAll}
 
 
-class LRUTest extends Runner(LRUUnit) with JUnit
-object LRUUnit extends Specification {
-  "LRU" can {
+class LRUTest extends SpecificationWithJUnit {
+  "LRU" should {
     "never grow beyond a certain size" in {
       val lru = new LRUMap[Int, Int](10)
       for (i <- 1 to 20) lru(i) = i
 
-      lru.size mustBe 10
+      lru.size must_== 10
     }
 
-    "Has the last 10 elements" in {
+    "have the last 10 elements" in {
       val lru = new LRUMap[Int, Int](10)
       for (i <- 1 to 20) lru(i) = i
 
-      lru.size mustBe 10
-      for (i <- 11 to 20) lru(i) must_== i
+      lru.size must_== 10
+      ((i: Int) => lru(i) must_== i).forall(11 to 20)
     }
 
 
-    "Expire elements to func" in {
+    "expire elements to func" in {
       var expCnt = 0
       val lru = new LRUMap[Int, Int](10, Empty, (k, v) => {expCnt += 1; k must_== v; k must be > 0; v must be < 11})
       for (i <- 1 to 20) lru(i) = i
 
-      lru.size mustBe 10
+      lru.size must_== 10
       expCnt must_== 10
-      for (i <- 11 to 20) lru(i) must_== i
+      ((i: Int) => lru(i) must_== i).forall(11 to 20)
     }
 
-    "Don't expire recently accessed" in {
+    "not expire recently accessed" in {
       var expCnt = 0
       val lru = new LRUMap[Int, Int](10, Empty, (k, v) => {expCnt += 1; k must_== v; k must be > 0})
       for (i <- 1 to 20) {
@@ -65,13 +64,10 @@ object LRUUnit extends Specification {
         lru(i) = i
       }
 
-      lru.size mustBe 10
+      lru.size must_== 10
       for (i <- 2 to 10) lru(i) must_== i
       lru(20) must_== 20
     }
 
   }
-}
-
-}
 }

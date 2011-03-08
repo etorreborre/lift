@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package net.liftweb {
-package common {
+package net.liftweb
+package common
 
-import _root_.org.specs._
+import org.specs2.mutable._
 import _root_.net.liftweb.common.Box._
-import _root_.org.specs.runner._
-import _root_.org.specs.Sugar._
 
-class HListSpecTest extends Runner(HListSpec) with JUnit with Console
-object HListSpec extends Specification {
+class HListTest extends SpecificationWithJUnit {
   "An HList" should {
-    "Must get types right" in {
+    "get types right" in {
       import HLists._
 
       val x = 1 :+: "Foo" :+: HNil
-
       val head: Int = x.head
       val head2: String = x.tail.head
 
       x.head must_== 1
       x.tail.head must_== "Foo"
     }
-
-    
   }
 
   "A combinable box" should {
@@ -51,7 +45,6 @@ object HListSpec extends Specification {
         case Left(_) => true must_== true
       }
     }
-
     "build a box with all Full must match" in {
       import CombinableBox._
       import HLists._
@@ -71,7 +64,6 @@ object HListSpec extends Specification {
         }
       }
     }
-
     "Use in for comprehension" in {
       import CombinableBox._
       import HLists._
@@ -83,10 +75,5 @@ object HListSpec extends Specification {
 
       res must_== Full(6)
     }
-
-
   }
-}
-
-}
 }

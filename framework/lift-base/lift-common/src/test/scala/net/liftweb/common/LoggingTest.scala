@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package net.liftweb {
-package common {
+package net.liftweb
+package common
 
-import _root_.org.specs._
-import _root_.org.specs.log.{Log => _}
+import org.specs2.mutable._
 import _root_.net.liftweb.common.Box._
-import _root_.org.specs.runner._
-import _root_.org.specs.Sugar._
-import _root_.org.specs.ScalaCheck
-import _root_.org.scalacheck.Gen._
-import _root_.org.scalacheck._
-import _root_.org.scalacheck.Arbitrary._
-import _root_.org.scalacheck.Prop.{forAll}
-
-class LoggingTest extends Runner(LoggingUnit) with JUnit
 
 class MyTopClass extends Logger {
   val x=1
@@ -43,7 +33,7 @@ object MyTopObj extends Logger {
 /**
  * Test relies on logback being on the classpath, so no configuration necessary
  */
-object LoggingUnit extends Specification {
+class LoggingUnitTest extends SpecificationWithJUnit {
   "Logging" can {
     "be mixed directly into object" in {
       object MyObj extends Logger {
@@ -70,7 +60,7 @@ object LoggingUnit extends Specification {
       val logger = Logger("MyLogger")
       
       logger.info("Logged with my named logger")
-      1 must_== 1
+      success
     }
     
     "log static MDC values" in {
@@ -106,7 +96,7 @@ object LoggingUnit extends Specification {
       logger.info("Logged with mdc1=(1,2), mdc2=yy")
       MDC.clear
       logger.info("No MDC values")
-      1 must_== 1
+      success
     }
     "trace function results" in {
       object MyObj extends Logger {
@@ -116,6 +106,7 @@ object LoggingUnit extends Specification {
           val x = 1
       }
       MyObj.x
+	  success
     }
 
     "be used in different levels and yield different loggers" in {
@@ -136,7 +127,4 @@ object LoggingUnit extends Specification {
       (new C).x must_== 2
     }
   }
-}
-
-}
 }
