@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package net.liftweb {
-package common {
+package net.liftweb
+package common
 
-import _root_.org.specs._
+import org.specs2.mutable._
 import _root_.net.liftweb.common.Box._
-import _root_.org.specs.runner._
-import _root_.org.specs.Sugar._
 
-class BoxSpecTest extends Runner(BoxSpec) with JUnit with Console
-object BoxSpec extends Specification {
+class BoxSpecTest extends SpecificationWithJUnit {
   "A Box" can {
     "be created from a Option. It is Empty if the option is None" in {
-      Box(None) mustBe Empty
+      Box(None) must be(Empty)
     }
-    "be created from a Option. It is Full(x) if the option is Some(x)" in {
+	"be created from a Option. It is Full(x) if the option is Some(x)" in {
       Box(Some(1)) must_== Full(1)
     }
     "be created from a List containing one element. It is Empty if the list is empty" in {
-      Box(Nil) mustBe Empty
+      Box(Nil) must be(Empty)
     }
     "be created from a List containing one element. It is Full(x) if the list is List(x)" in {
       Box(List(1)) must_== Full(1)
@@ -73,10 +70,10 @@ object BoxSpec extends Specification {
       Full(1).isDefined must beTrue
     }
     "return its value when opened" in {
-      Full(1).open_! mustBe 1
+      Full(1).open_! must_== 1
     }
     "return its value when opened with openOr(default value)" in {
-      Full(1) openOr 0 mustBe 1
+      Full(1) openOr 0 must_== 1
     }
     "return itself when or'ed with another Box" in {
       Full(1) or Full(2) must_== Full(1)
@@ -91,7 +88,7 @@ object BoxSpec extends Specification {
       Full(1) filter {_ > 0} must_== Full(1)
     }
     "define a 'filter' method, returning Empty if the filter is not satisfied" in {
-      Full(1) filter {_ == 0} mustBe Empty
+      Full(1) filter {_ == 0} must be(Empty)
     }
     "define a 'filterMsg' method, returning a Failure if the filter predicate is not satisfied" in {
       Full(1).filterMsg("not equal to 0")(_ == 0) must_== Failure("not equal to 0", Empty, Empty)
@@ -108,7 +105,7 @@ object BoxSpec extends Specification {
       Full(1) flatMap { x: Int => if (x > 0) Full("full") else Empty } must_== Full("full")
     }
     "define a 'flatMap' method transforming its value in another Box. If the value is transformed in an Empty can, the total result is an Empty can" in {
-      Full(0) flatMap { x: Int => if (x > 0) Full("full") else Empty } mustBe Empty
+      Full(0) flatMap { x: Int => if (x > 0) Full("full") else Empty } must be(Empty)
     }
     "define an 'elements' method returning an iterator containing its value" in {
       Full(1).elements.next must_== 1
@@ -159,14 +156,14 @@ object BoxSpec extends Specification {
       {Empty.open_!; ()} must throwA[NullPointerException]
     }
     "return a default value if opened with openOr" in {
-      Empty.openOr(1) mustBe 1
+      Empty.openOr(1) must_== 1
     }
     "return the other Box if or'ed with another Box" in {
       Empty.or(Full(1)) must_== Full(1)
     }
     "return itself if filtered with a predicate" in {
       val empty: Box[Int] = Empty
-      empty.filter {_ > 0} mustBe Empty
+      empty.filter {_ > 0} must be(Empty)
     }
     "define an 'exists' method returning false" in {
       val empty: Box[Int] = Empty
@@ -174,7 +171,7 @@ object BoxSpec extends Specification {
     }
     "define a 'filter' method, returning Empty" in {
       val empty: Box[Int] = Empty
-      empty filter {_ > 0} mustBe Empty
+      empty filter {_ > 0} must be(Empty)
     }
     "define a 'filterMsg' method, returning a Failure" in {
       Empty.filterMsg("not equal to 0")(_ == 0) must_== Failure("not equal to 0", Empty, Empty)
@@ -186,10 +183,10 @@ object BoxSpec extends Specification {
       total must_== 0
     }
     "define a 'map' method returning Empty" in {
-      Empty map { _.toString } mustBe Empty
+      Empty map { _.toString } must be(Empty)
     }
     "define a 'flatMap' method returning Empty" in {
-      Empty flatMap { x: Int => Full("full") } mustBe Empty
+      Empty flatMap { x: Int => Full("full") } must be(Empty)
     }
     "define an 'elements' method returning an empty iterator" in {
       Empty.elements.hasNext must beFalse
@@ -236,7 +233,4 @@ object BoxSpec extends Specification {
       Failure("error", Empty, Empty) ?~! "error2" must_== Failure("error2", Empty, Full(Failure("error", Empty, Empty)))
     }
   }
-}
-
-}
 }
